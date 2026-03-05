@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     # JWT
     JWT_SECRET: str = "mini-ai-sales-secret-key-change-in-production"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRATION_MINUTES: int = 60
 
     # Data paths (override via env vars for Docker)
     CSV_PATH: str = str(_PROJECT_ROOT / "data" / "sales_data.csv")
