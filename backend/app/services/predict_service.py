@@ -1,5 +1,7 @@
 """Prediction service – loads ML model and makes predictions."""
 
+import threading
+
 import joblib
 import numpy as np
 
@@ -7,14 +9,16 @@ from app.config import settings
 
 _model = None
 _encoder = None
-
+_lock = threading.Lock()
 
 def _load_model():
-    """Lazy-load model and encoder from disk."""
+    """Lazy-load model and encoder from disk with thread safety."""
     global _model, _encoder
     if _model is None:
-        _model = joblib.load(settings.MODEL_PATH)
-        _encoder = joblib.load(settings.ENCODER_PATH)
+        with _lock:
+            if _model is None:
+                _model = joblib.load(settings.MODEL_PATH)
+                _encoder = joblib.load(settings.ENCODER_PATH)
     return _model, _encoder
 
 

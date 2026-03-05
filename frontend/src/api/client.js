@@ -35,9 +35,24 @@ client.interceptors.response.use(
         window.location.href = "/login";
       }
     }
+
+    // Handle Network Errors / Timeouts explicitly
+    if (!error.response) {
+      return Promise.reject({
+        response: {
+          data: {
+            detail:
+              "Koneksi ke server terputus. Pastikan backend sudah menyala.",
+          },
+        },
+      });
+    }
+
     return Promise.reject(error);
   },
 );
+
+client.defaults.timeout = 10000; // 10 seconds timeout
 
 // ─── API functions ───────────────────────────────────────────────────────────
 

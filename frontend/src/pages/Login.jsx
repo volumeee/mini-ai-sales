@@ -11,6 +11,13 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const getErrorMsg = (err) => {
+    const detail = err.response?.data?.detail;
+    if (Array.isArray(detail)) return detail[0]?.msg || 'Kesalahan input';
+    if (typeof detail === 'object') return detail.msg || JSON.stringify(detail);
+    return detail || 'Login gagal. Coba lagi.';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -20,7 +27,7 @@ export default function Login() {
       await login(username, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login gagal. Coba lagi.');
+      setError(getErrorMsg(err));
     } finally {
       setLoading(false);
     }

@@ -46,6 +46,11 @@ async def file_not_found_handler(_request: Request, exc: FileNotFoundError):
         status_code=503,
         content={"detail": "Model ML belum di-train. Jalankan 'python ml/train_model.py' terlebih dahulu."},
     )
+@app.exception_handler(ValueError)
+async def value_error_handler(_request: Request, exc: ValueError):
+    """Handle data validation errors (e.g., missing CSV columns) gracefully."""
+    logger.error("Validation error: %s", exc)
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
 @app.exception_handler(Exception)

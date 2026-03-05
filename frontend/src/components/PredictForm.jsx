@@ -21,6 +21,13 @@ export default function PredictForm() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  const getErrorMsg = (err) => {
+    const detail = err.response?.data?.detail;
+    if (Array.isArray(detail)) return detail[0]?.msg || 'Terjadi kesalahan input';
+    if (typeof detail === 'object') return detail.msg || JSON.stringify(detail);
+    return detail || 'Prediksi gagal. Periksa koneksi atau model.';
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +48,7 @@ export default function PredictForm() {
       );
       setResult(data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Prediksi gagal. Pastikan model sudah di-train.');
+      setError(getErrorMsg(err));
     } finally {
       setLoading(false);
     }
