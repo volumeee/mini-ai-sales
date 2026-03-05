@@ -11,9 +11,9 @@ const formatCurrency = (value) =>
   }).format(value);
 
 const FIELDS = [
-  { name: 'jumlah_penjualan', label: 'Jumlah Penjualan', placeholder: 'Contoh: 150', min: 0 },
-  { name: 'harga', label: 'Harga (Rp)', placeholder: 'Contoh: 50000', min: 0 },
-  { name: 'diskon', label: 'Diskon (%)', placeholder: 'Contoh: 10', min: 0, max: 100 },
+  { name: 'jumlah_penjualan', label: 'Jumlah Penjualan', placeholder: 'Contoh: 150', min: 0, max: 1000000 },
+  { name: 'harga', label: 'Harga (Rp)', placeholder: 'Contoh: 50.000', min: 0, max: 100000000000 },
+  { name: 'diskon', label: 'Diskon (%)', placeholder: 'Contoh: 10', min: 0, le: 100 },
 ];
 
 export default function PredictForm() {
@@ -31,7 +31,24 @@ export default function PredictForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Auto-format Rupiah for 'harga' field
+    if (name === 'harga') {
+      const numericValue = value.replace(/\D/g, '');
+      // Limit to 100 Billion IDR
+      if (numericValue.length > 12) return; 
+      setForm((prev) => ({ ...prev, [name]: numericValue }));
+      return;
+    }
+    
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getDisplayValue = (name, value) => {
+    if (name === 'harga' && value) {
+      return new Intl.NumberFormat('id-ID').format(value);
+    }
+    return value;
   };
 
   const handleSubmit = async (e) => {
@@ -42,9 +59,9 @@ export default function PredictForm() {
 
     try {
       const { data } = await predictApi.predict(
-        parseInt(form.jumlah_penjualan),
-        parseInt(form.harga),
-        parseInt(form.diskon)
+        parseFloat(form.jumlah_penjualan || 0),
+        parseFloat(form.harga || 0),
+        parseFloat(form.diskon || 0)
       );
       setResult(data);
     } catch (err) {
@@ -77,19 +94,25 @@ export default function PredictForm() {
               <label htmlFor={name} className="text-sm font-medium text-gray-700">
                 {label}
               </label>
-              <input
-                id={name}
-                name={name}
-                type="number"
-                min={min}
-                max={max}
-                value={form[name]}
-                onChange={handleChange}
-                placeholder={placeholder}
-                required
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm outline-none
-                           focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition"
-              />
+              <div className="relative">
+                {name === 'harga' && (
+                  <span className="absolute left-3 top-2.5 text-gray-400 text-sm">Rp</span>
+                )}
+                <input
+                  id={name}
+                  name={name}
+                  type={name === 'harga' ? 'text' : 'number'}
+                  min={min}
+                  max={max}
+                  value={getDisplayValue(name, form[name])}
+                  onChange={handleChange}
+                  placeholder={placeholder}
+                  required
+                  className={`w-full py-2.5 border border-gray-300 rounded-lg text-sm outline-none
+                             focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 transition
+                             ${name === 'harga' ? 'pl-9 pr-3' : 'px-3'}`}
+                />
+              </div>
             </div>
           ))}
 
