@@ -8,8 +8,8 @@ Sistem ini dibangun dengan arsitektur **Decoupled Fullstack** yang memisahkan Fr
 
 ```mermaid
 graph TD
-    A[React Frontend] -- REST API (JWT) --> B[FastAPI Backend]
-    B -- Load Model --> C[ML Model (joblib)]
+    A[React Frontend] -- "REST API (JWT)" --> B[FastAPI Backend]
+    B -- Load Model --> C["ML Model (joblib)"]
     B -- Read Data --> D[CSV Data Source]
     E[ML Trainer Script] -- Train & Save --> C
     D -- Training Input --> E
