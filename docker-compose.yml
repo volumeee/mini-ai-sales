@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8005:8000"
+    volumes:
+      - ./data:/data
+      - ./ml:/ml
+    environment:
+      - CSV_PATH=/data/sales_data.csv
+      - MODEL_PATH=/ml/model.joblib
+      - ENCODER_PATH=/ml/label_encoder.joblib
+      - JWT_SECRET=mini-ai-sales-sangat-rahasia
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3005:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped

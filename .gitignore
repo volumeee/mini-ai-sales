@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+backend/venv/
+.env
+
+# ML artifacts (generated)
+ml/model.joblib
+ml/label_encoder.joblib
+ml/evaluation_report.txt
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
